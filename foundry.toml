@@ -1,0 +1,31 @@
+[profile.default]
+src = "src"
+out = "out"
+libs = ["lib"]
+
+fs_permissions = [{ access = "read", path = "./broadcast" }]
+
+remappings = [
+    "@openzeppelin/contracts=lib/openzeppelin-contracts/contracts",
+    "foundry-devops=lib/foundry-devops",
+]
+
+# See more config options https://github.com/foundry-rs/foundry/blob/master/crates/config/README.md#all-options
+
+# so here is the total outcome:
+# PurchaseTokens:
+# 1.1.
+# == Logs ==
+# Whitelisted buyer: 0x95188FE733Ebc71c79d54fa2956d32Ef6d69f631
+# Purchased 5 tokens for 50000000 stablecoin units
+# 1.2.
+# 100000000000000000000
+# DeclareDividends:
+# == Logs ==
+#  Declared dividend of 25000000 as round 0
+# == Logs ==
+#   Claimed dividend round 0 as 0x95188FE733Ebc71c79d54fa2956d32Ef6d69f631
+
+
+
+# Error: script failed: DividendDistributor__NoSupplyAtSnapshot(6)
