@@ -168,7 +168,7 @@ The full purchase → dividend declaration → dividend claim lifecycle has been
 
 ```bash
 # Clone and install dependencies
-git clone https://github.com/danushkka/property-tokenization
+git clone git@github.com:danushkka/property-tokenization.git
 cd property-tokenization
 forge install
 
