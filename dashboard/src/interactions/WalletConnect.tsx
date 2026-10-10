@@ -2,11 +2,11 @@ import { useState, useEffect } from "react";
 import { createWalletClient, custom, formatUnits, type Address } from "viem";
 import { sepolia } from "viem/chains";
 
-import { publicClient } from "./abis_and_constants/publicClient";
-import { TOKEN_ADDRESS, VALIDATOR_ADDRESS } from "./abis_and_constants/constants";
-import { tokenBalanceOfAbi, isWhitelistedAbi } from "./abis_and_constants/abis";
-import { PurchaseTokens } from "./PurchaseTokens";
-import { ClaimDividends } from "./ClaimDividends";
+import { publicClient } from "../abis_and_constants/publicClient";
+import { TOKEN_ADDRESS, VALIDATOR_ADDRESS } from "../abis_and_constants/constants";
+import { tokenBalanceOfAbi, isWhitelistedAbi } from "../abis_and_constants/abis";
+import { PurchaseTokens } from "../interactions/PurchaseTokens";
+import { ClaimDividends } from "../interactions/ClaimDividends";
 
 /**
  * Fetches an `account`'s token balance and whitelisted status
@@ -110,7 +110,7 @@ export function WalletConnect() {
             setError("Could not switch network. Please switch to Sepolia manually in MetaMask.");
         }
     }
-    
+
     // All hooks are above this line. Hooks can't come after an early return.
     if (!window.ethereum) {
         return <p>MetaMask not detected. Please install it to use this dashboard.</p>;

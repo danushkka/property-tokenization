@@ -1,4 +1,4 @@
-import { WalletConnect } from "./WalletConnect.tsx";
+import { WalletConnect } from "./interactions/WalletConnect.tsx";
 
 function App() {
   return (
