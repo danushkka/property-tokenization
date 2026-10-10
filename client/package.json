@@ -1,0 +1,39 @@
+{
+  "name": "property-tokenization",
+  "version": "1.0.0",
+  "description": "A compliance-gated, dividend-paying real-world asset (RWA) tokenization system built in Solidity with Foundry. Fractional ownership of a real-world property is represented as an ERC-20 token, restricted to whitelisted (KYC'd) holders, with snapshot-based dividend distribution of rental income and a timelock-protected governance layer guarding every sensitive admin action.",
+  "main": "index.js",
+  "directories": {
+    "lib": "lib",
+    "test": "test"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "read:balance": "tsx --env-file=../.env src/readers/readBalanceOf.ts",
+    "read:supply": "tsx --env-file=../.env src/readers/readTotalSupply.ts",
+    "read:max": "tsx --env-file=../.env src/readers/readMaxSupply.ts"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/danushkka/property-tokenization.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "module",
+  "bugs": {
+    "url": "https://github.com/danushkka/property-tokenization/issues"
+  },
+  "homepage": "https://github.com/danushkka/property-tokenization#readme",
+  "dependencies": {
+    "viem": "^2.56.9"
+  },
+  "devDependencies": {
+    "@types/node": "^26.6.3",
+    "tsx": "^4.23.15",
+    "typescript": "^7.0.2"
+  },
+  "allowScripts": {
+    "esbuild@0.28.2": true
+  }
+}
