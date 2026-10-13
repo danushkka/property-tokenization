@@ -3,7 +3,7 @@ pragma solidity ^0.8.30;
 
 /**
  * @title ReentrancyExploration
- * 
+ *
  * @notice An educational contract that simuates a reentrancy attempt to prove a trust boundary
  * in Tokenization project.
  */

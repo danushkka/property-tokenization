@@ -7,12 +7,12 @@ import {AccessControl} from "@openzeppelin/contracts/access/AccessControl.sol";
 /**
  * @title WhitelistValidator
  * @author danushkka
- * 
+ *
  * @notice Compliance validator that allows COMPLIANCE_ADMIN_ROLE to add or remove holders
  * from a whitelist, used to regulate transactions between holders.
- * 
+ *
  * @dev Enforced only at mint, burn, and transfer time via PropertyToken's compliance hook.
- * 
+ *
  * It is NOT checked at dividend claim time - a holder's eligibility for a given round is
  * locked in at that round's snapshot block, and later whitelist removal does not retroactively
  * revoke a claim they already qualified for. See DividendDistributor's NatSpec for details.
@@ -32,7 +32,7 @@ contract WhitelistValidator is IComplianceValidator, AccessControl {
 
     /**
      * @notice Defines that `account` is whitelisted and can send or receive this token.
-     * 
+     *
      * @param account an account to be added to the White List.
      */
     function addToWhitelist(address account) external onlyRole(COMPLIANCE_ADMIN_ROLE) {
@@ -42,7 +42,7 @@ contract WhitelistValidator is IComplianceValidator, AccessControl {
 
     /**
      * @notice Defines that `account` is no more whitelisted and can no longer send or receive the token.
-     * 
+     *
      * @param account an account to be removed from the Whitelist.
      */
     function removeFromWhitelist(address account) external onlyRole(COMPLIANCE_ADMIN_ROLE) {
@@ -52,9 +52,9 @@ contract WhitelistValidator is IComplianceValidator, AccessControl {
 
     /**
      * @notice Checks if `account` was whitelisted.
-     * 
+     *
      * @param account an account to be checked on being whitelisted.
-     * 
+     *
      * @return True if `account` is whitelisted.
      */
     function isWhitelisted(address account) public view returns (bool) {

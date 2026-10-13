@@ -13,7 +13,7 @@ contract PropertyIssuanceTest is Test {
     /////////////////////////////////////
     ////////// STATE VARIABLES //////////
     /////////////////////////////////////
-    
+
     ERC20Mock public stablecoin;
     PropertyIssuance public issuer;
     WhitelistValidator public validator;
