@@ -42,25 +42,24 @@ contract DeployTokenizedProperty is Script {
     function run()
         public
         returns (
-            address stablecoinAddress,
+            // address stablecoinAddress,
             WhitelistValidator validator,
             PropertyToken token,
             PropertyIssuance issuer,
             RevenueVault vault,
             DividendDistributor distributor,
             TimelockController timelock,
-            HelperConfig.NetworkConfig memory config,
-            address deployer
+            HelperConfig.NetworkConfig memory config
+            // address deployer
         )
     {
         HelperConfig helperConfig = new HelperConfig();
         config = helperConfig.getConfig();
 
-        address treasury;
-        address[] memory guardians;
-
-        (stablecoinAddress, treasury, guardians, deployer) =
-        (config.stablecoinAddress, config.treasury, config.guardians, config.deployer);
+        address stablecoinAddress = config.stablecoinAddress;
+        address treasury = config.treasury;
+        address[] memory guardians = config.guardians;
+        address deployer = config.deployer;
 
         vm.startBroadcast();
 

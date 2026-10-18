@@ -36,9 +36,12 @@ contract DeployTest is Test {
     //////////////////////////////////////
 
     function setUp() public {
+        vm.setEnv("ANVIL_DEPLOYER", vm.toString(DEFAULT_SENDER));
         deployScript = new DeployTokenizedProperty();
-        (stablecoinAddress, validator, token, issuer, vault, distributor, timelock, config, deployer) =
-            deployScript.run();
+
+        (validator, token, issuer, vault, distributor, timelock, config) = deployScript.run();
+        stablecoinAddress = config.stablecoinAddress;
+        deployer = config.deployer;
     }
 
     //////////////////////////////////////
