@@ -71,8 +71,8 @@ The full purchase → dividend declaration → dividend claim lifecycle has been
 
  ┌─────────────────────────────────────────────────────────┐
  │ TimelockController: 72h delay, guardian cancellation    │
- │ holds DEFAULT_ADMIN_ROLE on token, issuance, vault,     │
- │ distributor (see Roles and permissions)                 │
+ │ holds DEFAULT_ADMIN_ROLE on all five contracts above    │
+ │              (see Roles and permissions)                │
  └─────────────────────────────────────────────────────────┘
 ```
 
@@ -111,7 +111,7 @@ Each choice below was made to close a specific, real-world risk:
 
 - **Hybrid real-time / timelocked pricing.** `PropertyIssuance.updatePrice` applies instantly through `PRICE_ORACLE_ROLE`, but only within a bounded deviation (±5%, `MAX_INSTANT_DEVIATION_BPS`). Larger jumps require `forceUpdatePrice`, gated by `DEFAULT_ADMIN_ROLE`, which is held by the timelock, so large or suspicious moves automatically get a review window while routine adjustments stay fast.
 
-- **Timelock plus guardian cancellation for sensitive actions.** After deployment, `DEFAULT_ADMIN_ROLE` on the token, issuance, vault, and distributor moves from the deployer to a `TimelockController` (72h minimum delay). Guardians hold `CANCELLER_ROLE` and can block a malicious or mistaken action before it executes. Routine operational roles (depositing income, declaring dividends, instant price updates within bounds) are deliberately not timelocked: delaying frequent, already-bounded operations adds cost without much security.
+- **Timelock plus guardian cancellation for sensitive actions.** After deployment, `DEFAULT_ADMIN_ROLE` on all five contracts (validator, token, issuance, vault, distributor) moves from the deployer to a `TimelockController` (72h minimum delay). Guardians hold `CANCELLER_ROLE` and can block a malicious or mistaken action before it executes. Routine operational roles (whitelisting, depositing income, declaring dividends, instant price updates within bounds) are deliberately not timelocked: delaying frequent, already-bounded operations adds cost without much security. What *is* timelocked is changing who may perform them, replacing the compliance validator, and large price moves.
 
 - **Defense-in-depth reentrancy protection.** `nonReentrant` guards the functions that move funds: `PropertyIssuance.purchase`, `DividendDistributor.claim`, and `RevenueVault.withdrawTo`. No exploit is reachable with a plain ERC-20 stablecoin, but the guard is cheap insurance if a hook-style token is ever integrated. A constructed hook-style malicious token and attacker contract verify this directly (see `test/security/`).
 
@@ -154,7 +154,7 @@ Custodies stablecoin rental income. `DEPOSITOR_ROLE` deposits; only the `DISTRIB
 
 ## Roles and permissions
 
-State of the current Sepolia deployment, as produced by `script/DeployTokenizedProperty.s.sol`:
+State of the current Sepolia deployment: the deploy script's output plus the [post-deployment governance steps](#post-deployment-governance-steps) listed below.
 
 | Contract | Role | Held by | Behind timelock? |
 | --- | --- | --- | --- |
@@ -167,12 +167,11 @@ State of the current Sepolia deployment, as produced by `script/DeployTokenizedP
 | `RevenueVault` | `DISTRIBUTOR_ROLE` | `DividendDistributor` | Reassignment is timelocked |
 | `DividendDistributor` | `DEFAULT_ADMIN_ROLE` | TimelockController | Yes |
 | `DividendDistributor` | `DIVIDEND_MANAGER_ROLE` | Deployer | No: routine operation |
-| `WhitelistValidator` | `DEFAULT_ADMIN_ROLE`, `COMPLIANCE_ADMIN_ROLE` | Deployer | **No** (see [known gaps](#known-gaps-in-the-current-sepolia-deployment)) |
-| `TimelockController` | `PROPOSER_ROLE` | Deployer | n/a |
+| `WhitelistValidator` | `DEFAULT_ADMIN_ROLE` | TimelockController | Yes (migrated after deployment) |
+| `WhitelistValidator` | `COMPLIANCE_ADMIN_ROLE` | Deployer | No: whitelisting is an operational action and stays instant || `TimelockController` | `PROPOSER_ROLE` | Deployer | n/a |
 | `TimelockController` | `EXECUTOR_ROLE` | Anyone (`address(0)`) | n/a |
-| `TimelockController` | `CANCELLER_ROLE` | Guardians (and the proposer, by OpenZeppelin default) | n/a |
-| `TimelockController` | `DEFAULT_ADMIN_ROLE` | Timelock itself **and the deployer** | **No** (see [known gaps](#known-gaps-in-the-current-sepolia-deployment)) |
-
+| `TimelockController` | `CANCELLER_ROLE` | Deployer (all three guardian slots defaulted to it; see [known gaps](#known-gaps-in-the-current-sepolia-deployment)) | n/a |
+| `TimelockController` | `DEFAULT_ADMIN_ROLE` | The timelock itself (the deployer renounced it after setup) | n/a |
 ---
 
 ## Live deployment (Sepolia)
@@ -192,6 +191,15 @@ All contracts are deployed and verified; source is readable on Etherscan.
 
 > This deployment uses Circle's real Sepolia USDC test contract, with its genuine role-gated minting rather than a permissionless mock, so the demonstration reflects real stablecoin behavior.
 
+### Post-deployment governance steps
+
+Two governance steps were done after the deploy script ran, as direct transactions:
+
+| Step | Transaction |
+| --- | --- |
+| Deployer renounced its `DEFAULT_ADMIN_ROLE` on the TimelockController | [`0xd1b2bb82…c4b0f`](https://sepolia.etherscan.io/tx/0xd1b2bb8263963a03ff475e4c9f5dea4d566c1636e60ca3142d9d417db03c4b0f) |
+| Granted `DEFAULT_ADMIN_ROLE` on WhitelistValidator to the timelock | [`0x65696e8f…d3236`](https://sepolia.etherscan.io/tx/0x65696e8f926c7b2d520b0ed0ee08360e5532074674980512ed29e164970d3236) |
+| Revoked the deployer's `DEFAULT_ADMIN_ROLE` on WhitelistValidator | [`0x1975de53…61acb`](https://sepolia.etherscan.io/tx/0x1975de534e17719db70ad8ed52970c5cd0411a8739f716d219dbd16d26061acb) |
 ---
 
 ## Live demonstration
@@ -376,11 +384,10 @@ forge coverage --report summary
 
 ### Known gaps in the current Sepolia deployment
 
-These are limitations of the deployed configuration, with fixes planned:
+Limitations of the deployed configuration:
 
-1. **The deployer still holds `DEFAULT_ADMIN_ROLE` on the `TimelockController`.** The timelock was constructed with the deployer as its admin, and that role was not renounced afterward. That role controls who may propose, execute, and cancel, so the deployer could change those assignments (including removing guardians) without waiting out the delay. Until the role is renounced, guardian protection should be considered unenforced for a malicious deployer. *Fix:* renounce the role at the end of the deploy script, after the guardians are configured.
-2. **`WhitelistValidator`'s admin role is not behind the timelock.** The deployer keeps `DEFAULT_ADMIN_ROLE` and `COMPLIANCE_ADMIN_ROLE` there. Fast whitelist updates are intended, but reassigning those roles should be timelocked like on the other contracts. *Fix:* migrate `DEFAULT_ADMIN_ROLE` to the timelock and keep `COMPLIANCE_ADMIN_ROLE` operational.
-3. **All privileged roles are single EOAs** rather than multisigs (see below).
+1. **Guardians are not independent in this deployment.** All three guardian slots defaulted to the deployer address (`GUARDIAN_*` were not set), so the same key that proposes an action can also cancel it. The cancellation mechanism itself is covered by `TimelockController` tests that use independent guardian accounts. A real deployment must set three distinct addresses, ideally multisigs. The deployer's admin role on the timelock was renounced after setup, so changing proposers, executors, or guardians now requires a 72-hour timelocked proposal.
+2. **All privileged roles are single EOAs** rather than multisigs (see below).
 
 ---
 
