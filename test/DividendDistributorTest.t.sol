@@ -312,6 +312,53 @@ contract DividendDistributorTest is Test {
         assertEq(balanceAfterSecondRound, balanceAfterFirstRound + amount);
     }
 
+    function test_Claim_AllowsToClaimAfterDelegationAttempt(uint256 amount)
+        public
+        deposited
+        whitelistedAndMinted(alice)
+    {
+        vm.roll(block.number + 1);
+        amount = bound(amount, distributor.getMinDividendAmount(), MAX_SUPPLY);
+        uint256 balanceBefore = stablecoin.balanceOf(alice);
+
+        vm.startPrank(admin);
+        stablecoin.mint(admin, amount);
+        stablecoin.approve(address(vault), amount);
+        vault.deposit(amount);
+        distributor.declareDividends(amount);
+        vm.stopPrank();
+
+        // An attempt of delegating to another address
+        vm.expectRevert(abi.encodeWithSelector(PropertyToken.PropertyToken__DelegationDisabled.selector));
+        vm.prank(alice);
+        token.delegate(bob);
+
+        vm.prank(alice);
+        distributor.claim(0);
+        uint256 balanceAfter = stablecoin.balanceOf(alice);
+
+        assertEq(balanceAfter, balanceBefore + amount);
+    }
+
+    function test_Claim_DecreasesTotalOwed(uint256 amount) public deposited whitelistedAndMinted(alice) {
+        vm.roll(block.number + 1);
+        amount = bound(amount, distributor.getMinDividendAmount(), MAX_SUPPLY);
+
+        vm.startPrank(admin);
+        stablecoin.mint(admin, amount);
+        stablecoin.approve(address(vault), amount);
+        vault.deposit(amount);
+        distributor.declareDividends(amount);
+        vm.stopPrank();
+
+        uint256 totalOwedBefore = distributor.s_totalOwed();
+
+        vm.prank(alice);
+        distributor.claim(0);
+
+        assertEq(distributor.s_totalOwed(), totalOwedBefore - amount);
+    }
+
     function test_Claim_EmitsExpectedEvent(uint256 amount) public deposited whitelistedAndMinted(alice) {
         vm.roll(block.number + 1);
         amount = bound(amount, distributor.getMinDividendAmount(), MAX_SUPPLY);
@@ -344,25 +391,6 @@ contract DividendDistributorTest is Test {
         distributor.claim(0);
 
         assertTrue(distributor.getClaimedStatus(alice, 0));
-    }
-
-    function test_Claim_DecreasesTotalOwed(uint256 amount) public deposited whitelistedAndMinted(alice) {
-        vm.roll(block.number + 1);
-        amount = bound(amount, distributor.getMinDividendAmount(), MAX_SUPPLY);
-
-        vm.startPrank(admin);
-        stablecoin.mint(admin, amount);
-        stablecoin.approve(address(vault), amount);
-        vault.deposit(amount);
-        distributor.declareDividends(amount);
-        vm.stopPrank();
-
-        uint256 totalOwedBefore = distributor.s_totalOwed();
-
-        vm.prank(alice);
-        distributor.claim(0);
-
-        assertEq(distributor.s_totalOwed(), totalOwedBefore - amount);
     }
 
     function test_Claim_RevertWhen_InvalidRound(uint256 amount, uint256 invalidRoundId)

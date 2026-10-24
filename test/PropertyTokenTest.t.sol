@@ -197,6 +197,48 @@ contract PropertyTokenTest is Test {
     }
 
     //////////////////////////////////////
+    ////////////// DELEGATE //////////////
+    //////////////////////////////////////
+
+    function test_Delegate_AllowsSelfDelegation(uint256 amount) public {
+        amount = bound(amount, 1, token.getMaxSupply());
+
+        vm.startPrank(admin);
+        validator.addToWhitelist(alice);
+        token.mint(alice, amount);
+        vm.stopPrank();
+
+        // An attempt of self-delegation
+        vm.prank(alice);
+        token.delegate(alice);
+
+        assertEq(token.delegates(alice), alice);
+    }
+
+    function test_Delegate_RevertWhen_DelegatingToAnotherAddress(uint256 amount) public {
+        amount = bound(amount, 1, token.getMaxSupply());
+
+        vm.startPrank(admin);
+        validator.addToWhitelist(alice);
+        token.mint(alice, amount);
+        vm.stopPrank();
+
+        // An attempt of delegating to another address
+        vm.expectRevert(abi.encodeWithSelector(PropertyToken.PropertyToken__DelegationDisabled.selector));
+        vm.prank(alice);
+        token.delegate(bob);
+
+        vm.roll(block.number + 1);
+        assertEq(token.getVotes(alice), token.getPastVotes(alice, block.number - 1)); // alice's votes have not changed
+        assertEq(token.delegates(alice), alice); // self-delegation works
+    }
+
+    function test_DelegateBySig_RevertWhen_Called() public {
+        vm.expectRevert(abi.encodeWithSelector(PropertyToken.PropertyToken__DelegationDisabled.selector));
+        token.delegateBySig(bob, 0, block.number + 1 days, 27, bytes32(0), bytes32(0));
+    }
+
+    //////////////////////////////////////
     ////////////// TRANSFER //////////////
     //////////////////////////////////////
 
@@ -221,27 +263,6 @@ contract PropertyTokenTest is Test {
         token.transfer(alice, amount);
         assertEq(token.balanceOf(bob), 0);
         assertEq(token.balanceOf(alice), amount);
-    }
-
-    function test_Transfer_DoesNotOverrideExistingDelegation(uint256 amount) public {
-        amount = bound(amount, 1, token.getMaxSupply() / 2 - 1);
-
-        // Add both to whitelist
-        vm.startPrank(admin);
-        validator.addToWhitelist(alice);
-        token.mint(alice, amount); // `alice` has voting power of `amount`
-        validator.addToWhitelist(bob);
-        vm.stopPrank();
-
-        // `alice` delegates voting power to `bob`
-        vm.prank(alice);
-        token.delegate(bob);
-
-        // `alice` receives more tokens
-        vm.prank(admin);
-        token.mint(alice, amount);
-
-        assertEq(token.delegates(alice), bob); // must still point to `bob`
     }
 
     function test_Transfer_MovesVotingPowerBetweenHolders(uint256 amount) public {
