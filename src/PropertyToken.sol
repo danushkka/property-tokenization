@@ -59,6 +59,14 @@ contract PropertyToken is ERC20, ERC20Votes, AccessControl {
     error PropertyToken__MaxSupplyExceeded(uint256 requested, uint256 maxSupply);
 
     /**
+     * @notice Is thrown when a holder tries to delegate their voting power to anyone but themselves.
+     *
+     * @dev It closes the validator's bypass that allowed non-whitelisted parties to have voting power
+     * as well as claim dividends without passing `canTransfer()`.
+     */
+    error PropertyToken__DelegationDisabled();
+
+    /**
      * @notice Is thrown when a compliance validator has blocked the transaction.
      *
      * @dev See {IComplianceValidator} for more information.
@@ -111,6 +119,28 @@ contract PropertyToken is ERC20, ERC20Votes, AccessControl {
     function setComplianceValidator(address newValidator) public onlyRole(DEFAULT_ADMIN_ROLE) {
         validator = IComplianceValidator(newValidator);
         emit ComplianceValidatorUpdated(newValidator);
+    }
+
+    /**
+     * @notice Disables the delegation to anyone but oneself.
+     *
+     * @dev Overrides Votes' `delegate()`.
+     * @dev Self-delegation is allowed (the auto-delegation does it anyway).
+     * 
+     * @param delegatee An address to delegate the voting power to.
+     */
+    function delegate(address delegatee) public override {
+        if (delegatee != _msgSender()) revert PropertyToken__DelegationDisabled();
+        super.delegate(delegatee);
+    }
+
+    /**
+     * @notice Disables delagation by signature.
+     * 
+     * @dev Overrides Votes' `delegateBySig()`.
+     */
+    function delegateBySig(address, uint256, uint256, uint8, bytes32, bytes32) public pure override {
+        revert PropertyToken__DelegationDisabled();
     }
 
     /**
