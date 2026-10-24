@@ -72,6 +72,7 @@ contract DeployTest is Test {
     //////////////////////////////////////
 
     function test_Deploy_TimelockHoldsDefaultAdminRoleEverywhere() public view {
+        assertTrue(validator.hasRole(validator.DEFAULT_ADMIN_ROLE(), address(timelock)));
         assertTrue(token.hasRole(token.DEFAULT_ADMIN_ROLE(), address(timelock)));
         assertTrue(vault.hasRole(vault.DEFAULT_ADMIN_ROLE(), address(timelock)));
         assertTrue(distributor.hasRole(distributor.DEFAULT_ADMIN_ROLE(), address(timelock)));
@@ -79,6 +80,7 @@ contract DeployTest is Test {
     }
 
     function test_Deploy_DeployerLosesDefaultAdminRoleEverywhere() public view {
+        assertFalse(token.hasRole(validator.DEFAULT_ADMIN_ROLE(), deployer));
         assertFalse(token.hasRole(token.DEFAULT_ADMIN_ROLE(), deployer));
         assertFalse(vault.hasRole(vault.DEFAULT_ADMIN_ROLE(), deployer));
         assertFalse(distributor.hasRole(distributor.DEFAULT_ADMIN_ROLE(), deployer));
