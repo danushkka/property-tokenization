@@ -337,15 +337,15 @@ Note: every `VITE_`-prefixed variable is embedded in the public JavaScript bundl
 
 ## Testing
 
-123 tests across 8 suites, all passing:
+126 tests across 8 suites, all passing:
 
 | Suite | Tests | Focus |
 | --- | --- | --- |
 | `WhitelistValidatorTest` | 16 | Whitelist management, `canTransfer` for mint, burn, and transfer |
-| `PropertyTokenTest` | 23 | Compliance on transfer / `transferFrom` / mint, supply cap, auto-delegation, voting-power checkpoints |
+| `PropertyTokenTest` | 25 | Compliance on transfer / `transferFrom` / mint, supply cap, auto-delegation, voting-power checkpoints |
 | `PropertyIssuanceTest` | 22 | Purchase flow, cost rounding, limits, bounded and forced price updates |
 | `RevenueVaultTest` | 12 | Deposits, role-gated withdrawals, input validation |
-| `DividendDistributorTest` | 23 | Rounds, solvency, proportional claims across holders and rounds |
+| `DividendDistributorTest` | 24 | Rounds, solvency, proportional claims across holders and rounds |
 | `TimelockTest` | 17 | Direct admin access is closed, delay is enforced, guardians can cancel, operational roles stay fast |
 | `DeployTest` | 9 | The deployment script's contract wiring, role migration, and guardian setup |
 | `ReentrancyExplorationTest` | 1 | A hook-style malicious token and attacker contract confirm the reentrancy guard |
