@@ -126,7 +126,7 @@ contract PropertyToken is ERC20, ERC20Votes, AccessControl {
      *
      * @dev Overrides Votes' `delegate()`.
      * @dev Self-delegation is allowed (the auto-delegation does it anyway).
-     * 
+     *
      * @param delegatee An address to delegate the voting power to.
      */
     function delegate(address delegatee) public override {
@@ -136,7 +136,7 @@ contract PropertyToken is ERC20, ERC20Votes, AccessControl {
 
     /**
      * @notice Disables delagation by signature.
-     * 
+     *
      * @dev Overrides Votes' `delegateBySig()`.
      */
     function delegateBySig(address, uint256, uint256, uint8, bytes32, bytes32) public pure override {
