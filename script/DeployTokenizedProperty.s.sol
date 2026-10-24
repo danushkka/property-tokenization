@@ -96,6 +96,9 @@ contract DeployTokenizedProperty is Script {
             timelock.grantRole(timelock.CANCELLER_ROLE(), guardians[i]);
         }
 
+        validator.grantRole(validator.DEFAULT_ADMIN_ROLE(), address(timelock));
+        validator.revokeRole(validator.DEFAULT_ADMIN_ROLE(), deployer);
+
         token.grantRole(token.DEFAULT_ADMIN_ROLE(), address(timelock));
         token.revokeRole(token.DEFAULT_ADMIN_ROLE(), deployer);
 
