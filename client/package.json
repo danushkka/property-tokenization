@@ -1,17 +1,15 @@
 {
-  "name": "property-tokenization",
+  "name": "property-tokenization-client",
   "version": "1.0.0",
-  "description": "A compliance-gated, dividend-paying real-world asset (RWA) tokenization system built in Solidity with Foundry. Fractional ownership of a real-world property is represented as an ERC-20 token, restricted to whitelisted (KYC'd) holders, with snapshot-based dividend distribution of rental income and a timelock-protected governance layer guarding every sensitive admin action.",
-  "main": "index.js",
-  "directories": {
-    "lib": "lib",
-    "test": "test"
-  },
+  "private": true,
+  "description": "TypeScript read scripts (viem) for the property tokenization contracts",
+  "type": "module",
+  "license": "MIT",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "read:balance": "tsx --env-file=../.env src/readers/readBalanceOf.ts",
-    "read:supply": "tsx --env-file=../.env src/readers/readTotalSupply.ts",
-    "read:max": "tsx --env-file=../.env src/readers/readMaxSupply.ts"
+    "read:token": "tsx --env-file=../.env src/readers/tokenData.ts",
+    "read:compliance": "tsx --env-file=../.env src/readers/compliance.ts",
+    "read:purchase": "tsx --env-file=../.env src/readers/purchaseFlow.ts",
+    "read:dividends": "tsx --env-file=../.env src/readers/dividends.ts"
   },
   "repository": {
     "type": "git",
@@ -19,8 +17,6 @@
   },
   "keywords": [],
   "author": "",
-  "license": "ISC",
-  "type": "module",
   "bugs": {
     "url": "https://github.com/danushkka/property-tokenization/issues"
   },
