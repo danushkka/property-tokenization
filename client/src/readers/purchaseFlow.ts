@@ -51,7 +51,7 @@ async function readPurchaseFlow(userAddress: Address) {
 const [, , rawAddress] = process.argv;
 
 if (!rawAddress || !isAddress(rawAddress)) {
-    console.error("Usage: npx tsx src/readers/dividends.ts <address>");
+    console.error("Usage: npx tsx src/readers/purchaseFlow.ts <address>");
     process.exit(1); // exits with a failure code
 }
 

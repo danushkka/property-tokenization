@@ -1,6 +1,6 @@
 import { type Address, isAddress } from "viem";
 import { isWhitelistedAbi } from "../abis_and_constants/abis.js";
-import { client, VALIDATOR_ADDRESS, USER_ADDRESS } from "../abis_and_constants/constants.js";
+import { client, VALIDATOR_ADDRESS } from "../abis_and_constants/constants.js";
 
 async function readCompliance(userAddress: Address) {
     const isWhitelisted = await client.readContract({
@@ -16,7 +16,7 @@ async function readCompliance(userAddress: Address) {
 const [, , rawAddress] = process.argv;
 
 if (!rawAddress || !isAddress(rawAddress)) {
-    console.error("Usage: npx tsx src/readers/dividends.ts <address>");
+    console.error("Usage: npx tsx src/readers/compliance.ts <address>");
     process.exit(1); // exits with a failure code
 }
 
