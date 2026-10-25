@@ -352,6 +352,20 @@ Note: every `VITE_`-prefixed variable is embedded in the public JavaScript bundl
 
 The suites combine directed tests (compliance scenarios, boundary conditions such as exactly-at-cap and one-second-before-delay) with fuzz tests (purchase amounts, proportional payouts, price-deviation bounds).
 
+### Invariant Tests
+
+5 protocol-wide invariants, each run 256 times with 100 random calls per run (25,600 calls per invariant), all passing:
+
+| Invariant | What It Proves |
+| --- | --- |
+| `invariant_SupplyNeverExceedsCap` | `token.totalSupply()` never exceeds the immutable max supply, regardless of call sequence |
+| `invariant_VaultCoversObligations` | The vault's USDC balance always equals `distributor.s_totalOwed()` — obligations are always fully funded |
+| `invariant_TotalOwedMatchesLedger` | `s_totalOwed()` always equals the ghost-tracked `declared - claimed` ledger |
+| `invariant_RoundPayoutsNeverExceedRoundTotal` | No dividend round ever pays out more than it declared |
+| `invariant_NobodyDelegatesAway` | Any holder with a positive token balance always self-delegates |
+
+The invariant suite uses a stateful `Handler` with ghost variables (`ghost_declared`, `ghost_claimed`, `ghost_paidInRound`) to cross-check on-chain accounting against an independent ledger, and a `targetContract` binding that restricts the fuzzer to the handler's public selectors (`buy`, `claimDividend`, `declareDividend`, `setWhitelisted`, `transfer`, `tryDelegate`). High revert rates on `buy` (~28%) and `tryDelegate` (~14%) reflect the fuzzer hitting intended guardrails (supply cap, whitelist enforcement), not protocol failures.
+
 **Coverage:** every contract in `src/` has 100% line, statement, branch, and function coverage. The deployment script is covered by `DeployTest`; the `Interactions` scripts and the Sepolia/mainnet branches of `HelperConfig` are exercised by live runs rather than unit tests.
 
 **CI** (`.github/workflows/test.yml`) runs `forge fmt --check`, `forge build --sizes`, and `forge test` on every push and pull request.
