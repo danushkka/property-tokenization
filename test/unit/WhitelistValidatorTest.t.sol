@@ -2,7 +2,7 @@
 pragma solidity ^0.8.30;
 
 import {Test} from "forge-std/Test.sol";
-import {WhitelistValidator} from "../src/WhitelistValidator.sol";
+import {WhitelistValidator} from "../../src/WhitelistValidator.sol";
 
 contract WhitelistValidatorTest is Test {
     /////////////////////////////////////

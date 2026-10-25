@@ -4,7 +4,7 @@ pragma solidity ^0.8.30;
 import {Test} from "forge-std/Test.sol";
 import {ERC20Mock} from "@openzeppelin/contracts/mocks/token/ERC20Mock.sol";
 
-import {RevenueVault} from "../src/RevenueVault.sol";
+import {RevenueVault} from "../../src/RevenueVault.sol";
 
 contract RevenueVaultTest is Test {
     /////////////////////////////////////

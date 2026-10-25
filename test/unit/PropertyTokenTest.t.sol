@@ -4,9 +4,9 @@ pragma solidity ^0.8.30;
 import {Test} from "forge-std/Test.sol";
 import {IVotes} from "@openzeppelin/contracts/governance/utils/IVotes.sol";
 
-import {PropertyToken} from "../src/PropertyToken.sol";
-import {WhitelistValidator} from "../src/WhitelistValidator.sol";
-import {IComplianceValidator} from "../src/interfaces/IComplianceValidator.sol";
+import {PropertyToken} from "../../src/PropertyToken.sol";
+import {WhitelistValidator} from "../../src/WhitelistValidator.sol";
+import {IComplianceValidator} from "../../src/interfaces/IComplianceValidator.sol";
 
 contract PropertyTokenTest is Test {
     //////////////////////////////////////

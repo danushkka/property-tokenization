@@ -4,10 +4,10 @@ pragma solidity ^0.8.30;
 import {Test} from "forge-std/Test.sol";
 import {ERC20Mock} from "@openzeppelin/contracts/mocks/token/ERC20Mock.sol";
 
-import {PropertyToken} from "../src/PropertyToken.sol";
-import {WhitelistValidator} from "../src/WhitelistValidator.sol";
-import {RevenueVault} from "../src/RevenueVault.sol";
-import {DividendDistributor} from "../src/DividendDistributor.sol";
+import {PropertyToken} from "../../src/PropertyToken.sol";
+import {WhitelistValidator} from "../../src/WhitelistValidator.sol";
+import {RevenueVault} from "../../src/RevenueVault.sol";
+import {DividendDistributor} from "../../src/DividendDistributor.sol";
 
 contract DividendDistributorTest is Test {
     /////////////////////////////////////

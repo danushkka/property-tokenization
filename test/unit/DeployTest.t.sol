@@ -4,14 +4,14 @@ pragma solidity ^0.8.30;
 import {Test} from "forge-std/Test.sol";
 import {TimelockController} from "@openzeppelin/contracts/governance/TimelockController.sol";
 
-import {DeployTokenizedProperty} from "../script/DeployTokenizedProperty.s.sol";
-import {HelperConfig} from "../script/HelperConfig.s.sol";
+import {DeployTokenizedProperty} from "../../script/DeployTokenizedProperty.s.sol";
+import {HelperConfig} from "../../script/HelperConfig.s.sol";
 
-import {WhitelistValidator} from "../src/WhitelistValidator.sol";
-import {PropertyToken} from "../src/PropertyToken.sol";
-import {PropertyIssuance} from "../src/PropertyIssuance.sol";
-import {RevenueVault} from "../src/RevenueVault.sol";
-import {DividendDistributor} from "../src/DividendDistributor.sol";
+import {WhitelistValidator} from "../../src/WhitelistValidator.sol";
+import {PropertyToken} from "../../src/PropertyToken.sol";
+import {PropertyIssuance} from "../../src/PropertyIssuance.sol";
+import {RevenueVault} from "../../src/RevenueVault.sol";
+import {DividendDistributor} from "../../src/DividendDistributor.sol";
 
 contract DeployTest is Test {
     /////////////////////////////////////

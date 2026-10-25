@@ -5,9 +5,9 @@ import {Test, console2} from "forge-std/Test.sol";
 import {ERC20Mock} from "@openzeppelin/contracts/mocks/token/ERC20Mock.sol";
 import {Math} from "@openzeppelin/contracts/utils/math/Math.sol";
 
-import {PropertyIssuance} from "../src/PropertyIssuance.sol";
-import {WhitelistValidator} from "../src/WhitelistValidator.sol";
-import {PropertyToken} from "../src/PropertyToken.sol";
+import {PropertyIssuance} from "../../src/PropertyIssuance.sol";
+import {WhitelistValidator} from "../../src/WhitelistValidator.sol";
+import {PropertyToken} from "../../src/PropertyToken.sol";
 
 contract PropertyIssuanceTest is Test {
     /////////////////////////////////////
