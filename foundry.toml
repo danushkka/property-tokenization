@@ -9,3 +9,7 @@ remappings = [
     "@openzeppelin/contracts=lib/openzeppelin-contracts/contracts",
     "foundry-devops=lib/foundry-devops",
 ]
+
+[invariant]
+runs = 256
+depth = 100
