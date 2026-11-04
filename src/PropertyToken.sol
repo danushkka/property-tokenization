@@ -48,6 +48,7 @@ contract PropertyToken is ERC20, ERC20Votes, AccessControl {
     /////////////// ERRORS ///////////////
     //////////////////////////////////////
 
+    error PropertyToken__ZeroValidator();
     error PropertyToken__MaxSupplyCannotBeZero();
 
     /**
@@ -85,11 +86,12 @@ contract PropertyToken is ERC20, ERC20Votes, AccessControl {
         ERC20(name, symbol)
         EIP712(name, "1.0")
     {
+        if (validatorAddress == address(0)) revert PropertyToken__ZeroValidator();
+        if (maxSupply == 0) revert PropertyToken__MaxSupplyCannotBeZero();
+
         _grantRole(DEFAULT_ADMIN_ROLE, admin);
         _grantRole(ISSUER_ROLE, admin);
         validator = IComplianceValidator(validatorAddress);
-
-        if (maxSupply == 0) revert PropertyToken__MaxSupplyCannotBeZero();
         i_maxSupply = maxSupply;
     }
 
@@ -117,6 +119,7 @@ contract PropertyToken is ERC20, ERC20Votes, AccessControl {
      * @param newValidator Address of the new validator.
      */
     function setComplianceValidator(address newValidator) public onlyRole(DEFAULT_ADMIN_ROLE) {
+        if (newValidator == address(0)) revert PropertyToken__ZeroValidator();
         validator = IComplianceValidator(newValidator);
         emit ComplianceValidatorUpdated(newValidator);
     }
