@@ -221,9 +221,6 @@ contract ProtocolInvariant is StdInvariant, Test {
     function invariant_RoundSnapshotsAreValid() public view {
         uint256 rounds = distributor.getRoundCount();
         for (uint256 id; id < rounds; id++) {
-            // uint256 snapshotBlock = handler.ghost_roundSnapshot(id);
-            // uint256 totalSupplyAtSnapshot = handler.ghost_roundSupply(id);
-            // (, uint256 totalAmount,) = distributor.rounds(id);
             (uint256 snapshotBlock, uint256 totalAmount, uint256 totalSupplyAtSnapshot) = distributor.rounds(id);
 
             assertLt(snapshotBlock, block.number);
