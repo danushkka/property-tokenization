@@ -43,6 +43,12 @@ contract PropertyTokenTest is Test {
     //////////// CONSTRUCTOR /////////////
     //////////////////////////////////////
 
+    function test_Constructor_RevertWhen_ZeroValidator() public {
+        vm.prank(admin);
+        vm.expectRevert(abi.encodeWithSelector(PropertyToken.PropertyToken__ZeroValidator.selector));
+        new PropertyToken("name", "symbol", admin, address(0), 1_000_000e18);
+    }
+
     function test_Constructor_RevertWhen_ZeroMaxSupply() public {
         address newValidator = makeAddr("newValidator");
         vm.prank(admin);
@@ -177,6 +183,12 @@ contract PropertyTokenTest is Test {
         vm.expectEmit(true, false, false, false, address(token));
         emit PropertyToken.ComplianceValidatorUpdated(newValidator);
         token.setComplianceValidator(newValidator);
+    }
+
+    function test_SetComplianceValidator_RevertWhen_ZeroAddress() public {
+        vm.prank(admin);
+        vm.expectRevert(abi.encodeWithSelector(PropertyToken.PropertyToken__ZeroValidator.selector));
+        token.setComplianceValidator(address(0));
     }
 
     function test_SetComplianceValidator_RevertWhen_NotByAdmin() public {
