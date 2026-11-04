@@ -15,17 +15,25 @@ import {DividendDistributor} from "../../src/DividendDistributor.sol";
 import {Handler} from "./Handler.sol";
 
 contract ProtocolInvariant is StdInvariant, Test {
-    ERC20Mock usdc;
-    WhitelistValidator validator;
-    PropertyToken token;
-    PropertyIssuance issuer;
-    RevenueVault vault;
-    DividendDistributor distributor;
+    //////////////////////////////////////
+    ////////// STATE VARIABLES ///////////
+    //////////////////////////////////////
 
-    Handler handler;
+    ERC20Mock public usdc;
+    WhitelistValidator public validator;
+    PropertyToken public token;
+    PropertyIssuance public issuer;
+    RevenueVault public vault;
+    DividendDistributor public distributor;
 
-    address admin = makeAddr("admin");
-    address treasury = makeAddr("treasury");
+    Handler public handler;
+
+    address public admin = makeAddr("admin");
+    address public treasury = makeAddr("treasury");
+
+    //////////////////////////////////////
+    /////////////// SET UP ///////////////
+    //////////////////////////////////////
 
     function setUp() public {
         usdc = new ERC20Mock();
@@ -42,40 +50,6 @@ contract ProtocolInvariant is StdInvariant, Test {
 
         handler = new Handler(usdc, validator, token, issuer, vault, distributor, admin);
         targetContract(address(handler));
-    }
-
-    function invariant_SupplyNeverExceedsCap() public view {
-        assertLe(token.totalSupply(), token.getMaxSupply());
-    }
-
-    function invariant_VaultCoversObligations() public view {
-        assertEq(usdc.balanceOf(address(vault)), distributor.s_totalOwed());
-    }
-
-    function invariant_TotalOwedMatchesLedger() public view {
-        assertEq(distributor.s_totalOwed(), handler.ghost_declared() - handler.ghost_claimed());
-    }
-
-    function invariant_NobodyOperatesIfNotWhitelisted() public view {
-        assertEq(handler.ghost_breaches(), 0);
-    }
-
-    function invariant_RoundPayoutsNeverExceedRoundTotal() public view {
-        for (uint256 id; id < distributor.getRoundCount(); id++) {
-            (, uint256 total,) = distributor.rounds(id);
-            assertLe(handler.ghost_paidInRound(id), total);
-        }
-    }
-
-    function invariant_CostRoundsWithinMinRange() public view {
-        assertLe(handler.ghost_underpaid(), 1);
-    }
-
-    function invariant_NobodyDelegatesAway() public view {
-        for (uint256 i; i < handler.actorsCount(); i++) {
-            address holder = handler.actors(i);
-            if (token.balanceOf(holder) > 0) assertEq(token.delegates(holder), holder);
-        }
     }
 
     //////////////////////////////////////
@@ -123,9 +97,22 @@ contract ProtocolInvariant is StdInvariant, Test {
         }
     }
 
+    /// @notice No holder can delegate their votes other than by transferring tokens.
+    function invariant_NobodyDelegatesAway() public view {
+        for (uint256 i; i < handler.actorsCount(); i++) {
+            address holder = handler.actors(i);
+            if (token.balanceOf(holder) > 0) assertEq(token.delegates(holder), holder);
+        }
+    }
+
     //////////////////////////////////////
     ///////// TOKEN CONSERVATION /////////
     //////////////////////////////////////
+
+    /// @notice Total supply of tokens never exceeds max supply.
+    function invariant_SupplyNeverExceedsCap() public view {
+        assertLe(token.totalSupply(), token.getMaxSupply());
+    }
 
     /// @notice Every minted token sits in an actor's balance (no burn function exists).
     function invariant_SumOfActorBalancesEqualsTotalSupply() public view {
@@ -135,10 +122,6 @@ contract ProtocolInvariant is StdInvariant, Test {
         }
         assertEq(sum, token.totalSupply());
     }
-
-    /// @notice Every holder with a balance has non-zero voting power.
-    /// @dev Overlaps with invariant_HoldersHaveVotes; kept as an explicit
-    ///      "no silent exclusion" check.
 
     //////////////////////////////////////
     ///////// USDC CONSERVATION //////////
@@ -201,6 +184,19 @@ contract ProtocolInvariant is StdInvariant, Test {
     ////////// ROUND ACCOUNTING //////////
     //////////////////////////////////////
 
+    /// @notice Total owed changes in accordance with accounting.
+    function invariant_TotalOwedMatchesLedger() public view {
+        assertEq(distributor.s_totalOwed(), handler.ghost_declared() - handler.ghost_claimed());
+    }
+
+    /// @notice The sum of payouts never exceeds total amount declared.
+    function invariant_RoundPayoutsNeverExceedRoundTotal() public view {
+        for (uint256 id; id < distributor.getRoundCount(); id++) {
+            (, uint256 total,) = distributor.rounds(id);
+            assertLe(handler.ghost_paidInRound(id), total);
+        }
+    }
+
     /// @notice The sum of round amounts equals the ghost-tracked declared total.
     function invariant_SumOfRoundAmountsEqualsDeclared() public view {
         uint256 sum;
@@ -237,6 +233,11 @@ contract ProtocolInvariant is StdInvariant, Test {
         }
     }
 
+    /// @notice Rounding mechanism is accurate.
+    function invariant_CostRoundsWithinMinRange() public view {
+        assertLe(handler.ghost_underpaid(), 1);
+    }
+
     //////////////////////////////////////
     /////////////// FUNDS ////////////////
     //////////////////////////////////////
@@ -256,6 +257,11 @@ contract ProtocolInvariant is StdInvariant, Test {
         assertEq(usdc.balanceOf(treasury), handler.ghost_totalCost());
     }
 
+    /// @notice Vault balance is at least the amount owed.
+    function invariant_VaultCoversObligations() public view {
+        assertGe(usdc.balanceOf(address(vault)), distributor.s_totalOwed());
+    }
+
     /// @notice Vault balance equals ghost-tracked deposits minus claims.
     /// @dev Independent of s_totalOwed: catches drift in the distributor's ledger.
     function invariant_VaultBalanceMatchesDepositsMinusClaims() public view {
@@ -265,6 +271,11 @@ contract ProtocolInvariant is StdInvariant, Test {
     //////////////////////////////////////
     ////////////// SAFETY ////////////////
     //////////////////////////////////////
+
+    /// @notice Only whitelisted holders can interact with the protocol.
+    function invariant_NobodyOperatesIfNotWhitelisted() public view {
+        assertEq(handler.ghost_breaches(), 0);
+    }
 
     /// @notice The compliance validator is never zero (zero would brick transfers).
     function invariant_ValidatorIsNotZero() public view {
