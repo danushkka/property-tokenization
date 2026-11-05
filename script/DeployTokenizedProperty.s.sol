@@ -91,6 +91,7 @@ contract DeployTokenizedProperty is Script {
         executors[0] = address(0); // anyone can execute once the delay has passed
 
         timelock = new TimelockController(MIN_DELAY, proposers, executors, deployer);
+        console2.log("Timelock deployed at:", address(timelock));
 
         for (uint256 i; i < guardians.length; i++) {
             timelock.grantRole(timelock.CANCELLER_ROLE(), guardians[i]);
@@ -110,6 +111,8 @@ contract DeployTokenizedProperty is Script {
 
         distributor.grantRole(distributor.DEFAULT_ADMIN_ROLE(), address(timelock));
         distributor.revokeRole(distributor.DEFAULT_ADMIN_ROLE(), deployer);
+
+        timelock.renounceRole(timelock.DEFAULT_ADMIN_ROLE(), deployer);
 
         vm.stopBroadcast();
 
