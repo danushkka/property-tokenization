@@ -31,7 +31,8 @@ import {DividendDistributor} from "../src/DividendDistributor.sol";
  * 8. Reassign vault's DISTRIBUTOR_ROLE from the deployer to the distributor;
  * 9. Deploy TimelockController;
  * 10. Assign timelock's CANCELLER_ROLEs to guardians;
- * 11. Reassign all DEFAULT_ADMIN_ROLEs from the deployer to the timelock.
+ * 11. Reassign all DEFAULT_ADMIN_ROLEs from the deployer to the timelock;
+ * 12. Renounce deployer's admin role from timelock.
  */
 contract DeployTokenizedProperty is Script {
     uint256 public constant MAX_SUPPLY = 1_000_000e18;
@@ -42,7 +43,6 @@ contract DeployTokenizedProperty is Script {
     function run()
         public
         returns (
-            // address stablecoinAddress,
             WhitelistValidator validator,
             PropertyToken token,
             PropertyIssuance issuer,
@@ -50,7 +50,6 @@ contract DeployTokenizedProperty is Script {
             DividendDistributor distributor,
             TimelockController timelock,
             HelperConfig.NetworkConfig memory config
-            // address deployer
         )
     {
         HelperConfig helperConfig = new HelperConfig();
