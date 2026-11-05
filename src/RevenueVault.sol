@@ -24,8 +24,8 @@ contract RevenueVault is AccessControl, ReentrancyGuard {
     ////////// STATE VARIABLES ///////////
     //////////////////////////////////////
 
-    bytes32 public DEPOSITOR_ROLE = keccak256("DEPOSITOR_ROLE");
-    bytes32 public DISTRIBUTOR_ROLE = keccak256("DISTRIBUTOR_ROLE");
+    bytes32 public constant DEPOSITOR_ROLE = keccak256("DEPOSITOR_ROLE");
+    bytes32 public constant DISTRIBUTOR_ROLE = keccak256("DISTRIBUTOR_ROLE");
 
     /// @notice The single stablecoin this vault accepts, fixed at deployment.
     IERC20 public immutable i_stablecoin;
