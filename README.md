@@ -180,38 +180,28 @@ All contracts are deployed and verified; source is readable on Etherscan.
 
 | Contract | Address |
 | --- | --- |
-| WhitelistValidator | [`0x7d3342950f772388F33D0789660aD0B6Aa731baD`](https://sepolia.etherscan.io/address/0x7d3342950f772388F33D0789660aD0B6Aa731baD) |
-| PropertyToken | [`0x710559A196549934c67C4f7fa8917FE64C87B55F`](https://sepolia.etherscan.io/address/0x710559A196549934c67C4f7fa8917FE64C87B55F) |
-| PropertyIssuance | [`0x9779dDB22f8c621B408556aaAaf5816F31a15Df2`](https://sepolia.etherscan.io/address/0x9779dDB22f8c621B408556aaAaf5816F31a15Df2) |
-| RevenueVault | [`0x60ff418bD533c447dDD9247d05577797F5F7e5a4`](https://sepolia.etherscan.io/address/0x60ff418bD533c447dDD9247d05577797F5F7e5a4) |
-| DividendDistributor | [`0xC32dD5de57e0DaE62F2D20BbEEfB4927BD82A476`](https://sepolia.etherscan.io/address/0xC32dD5de57e0DaE62F2D20BbEEfB4927BD82A476) |
-| TimelockController | [`0xe02bae1314a30e649feeedc31ac652611f69ca66`](https://sepolia.etherscan.io/address/0xe02bae1314a30e649feeedc31ac652611f69ca66) |
+| WhitelistValidator | [`0xcAB07a5F798Fe39d91B3Dca8fcf93B5575880943`](https://sepolia.etherscan.io/address/0xcAB07a5F798Fe39d91B3Dca8fcf93B5575880943) |
+| PropertyToken | [`0x4601DCB38c0480A530bdCa0B1D6012195b1DCb4d`](https://sepolia.etherscan.io/address/0x4601DCB38c0480A530bdCa0B1D6012195b1DCb4d) |
+| PropertyIssuance | [`0xFeCBDaaF623F685C5e4CC3337261Ea863bD7454C`](https://sepolia.etherscan.io/address/0xFeCBDaaF623F685C5e4CC3337261Ea863bD7454C) |
+| RevenueVault | [`0x131fe84284456942EAC9dDBF838f68Ea722cCDB6`](https://sepolia.etherscan.io/address/0x131fe84284456942EAC9dDBF838f68Ea722cCDB6) |
+| DividendDistributor | [`0xe70fa8CF053d1dA9c94f374fe532A05e4cb72620`](https://sepolia.etherscan.io/address/0xe70fa8CF053d1dA9c94f374fe532A05e4cb72620) |
+| TimelockController | [`0x597b050a8ae06D3cCf186714e7d398B517D21568`](https://sepolia.etherscan.io/address/0x597b050a8ae06D3cCf186714e7d398B517D21568) |
 | Deployer (EOA) | [`0x95188FE733Ebc71c79d54fa2956d32Ef6d69f631`](https://sepolia.etherscan.io/address/0x95188FE733Ebc71c79d54fa2956d32Ef6d69f631) |
 | Stablecoin (Circle testnet USDC) | [`0x1c7D4B196Cb0C7B01d743Fbc6116a902379C7238`](https://sepolia.etherscan.io/address/0x1c7D4B196Cb0C7B01d743Fbc6116a902379C7238) |
 
 > This deployment uses Circle's real Sepolia USDC test contract, with its genuine role-gated minting rather than a permissionless mock, so the demonstration reflects real stablecoin behavior.
 
-### Post-deployment governance steps
-
-Two governance steps were done after the deploy script ran, as direct transactions:
-
-| Step | Transaction |
-| --- | --- |
-| Deployer renounced its `DEFAULT_ADMIN_ROLE` on the TimelockController | [`0xd1b2bb82…c4b0f`](https://sepolia.etherscan.io/tx/0xd1b2bb8263963a03ff475e4c9f5dea4d566c1636e60ca3142d9d417db03c4b0f) |
-| Granted `DEFAULT_ADMIN_ROLE` on WhitelistValidator to the timelock | [`0x65696e8f…d3236`](https://sepolia.etherscan.io/tx/0x65696e8f926c7b2d520b0ed0ee08360e5532074674980512ed29e164970d3236) |
-| Revoked the deployer's `DEFAULT_ADMIN_ROLE` on WhitelistValidator | [`0x1975de53…61acb`](https://sepolia.etherscan.io/tx/0x1975de534e17719db70ad8ed52970c5cd0411a8739f716d219dbd16d26061acb) |
 ---
 
 ## Live demonstration
 
-The full lifecycle was executed on Sepolia with real testnet USDC: 5 tokens bought for 50 USDC, a 25 USDC dividend declared as round 0, then claimed.
+The full lifecycle was executed on Sepolia with real testnet USDC. The scripts in `script/Interactions.s.sol` are one-shot helpers that read the deployed addresses from `HelperConfig` and send the corresponding transactions.
 
 | Step | Script | Transaction |
 | --- | --- | --- |
-| 1. Purchase tokens | `Interactions.s.sol:PurchaseTokens` | [`0x46191522…877e81`](https://sepolia.etherscan.io/tx/0x46191522041d3f1738e7c70f3fdd319235603ef9f0813c30cdb2dfc94c877e81) |
-| 2. Declare dividend | `Interactions.s.sol:DeclareDividend` | [`0x01d5e0b0…51ec77`](https://sepolia.etherscan.io/tx/0x01d5e0b00128e437c9fa8cba42b0eef757de0f749f3bf7f783e57e147d51ec77) |
-| 3. Claim dividend | `Interactions.s.sol:ClaimDividend` | [`0x5a92146b…a6170f`](https://sepolia.etherscan.io/tx/0x5a92146bf021e1d5e6532642390caf74a5b4777547daa268cee5e65618a6170f) |
-
+| 1. Purchase tokens | `Interactions.s.sol:PurchaseTokens` | [`0x9fb11520…657b8e`](https://sepolia.etherscan.io/tx/0x9fb11520a2e9aa0b18c84e67f250c58f084601e4fcb81ca0d2ad6cac14657b8e) |
+| 2. Declare dividend | `Interactions.s.sol:DeclareDividend` | [`0x15184440…3c9e72`](https://sepolia.etherscan.io/tx/0x15184440591085994bf642755fe34d5ec15eec1b6c7cf84e23f09af62e3c9e72) |
+| 3. Claim dividend | `Interactions.s.sol:ClaimDividend` | [`0xc1c938a0…5d0539`](https://sepolia.etherscan.io/tx/0xc1c938a06297a78b8b2a2f793f2e971516ec48588834c483494579ffb25d0539) |
 ---
 
 ## Dashboard
